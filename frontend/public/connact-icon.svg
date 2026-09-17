@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Connact.ai</title>
+  <defs>
+    <linearGradient id="caretGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F2FF"/>
+      <stop offset="100%" stop-color="#0072FF"/>
+    </linearGradient>
+  </defs>
+  <path d="M10 50L32 12L54 50" fill="none" stroke="url(#caretGradient)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

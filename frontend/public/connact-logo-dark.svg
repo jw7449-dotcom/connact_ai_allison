@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="64" viewBox="0 0 280 64" role="img" aria-labelledby="title description">
+  <title id="title">Connact.ai logo — dark wordmark</title>
+  <desc id="description">The Connact.ai wordmark with a blue gradient caret replacing the letter a.</desc>
+  <defs>
+    <linearGradient id="caretGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F2FF"/>
+      <stop offset="100%" stop-color="#0072FF"/>
+    </linearGradient>
+  </defs>
+  <g fill="#0D0B14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif" font-size="48" font-weight="800" letter-spacing="-0.96">
+    <text x="0" y="49">Conn</text>
+    <text x="180.3" y="49">ct.ai</text>
+  </g>
+  <svg x="123.5" y="8" width="52.8" height="48" viewBox="0 0 24 24" fill="none">
+    <path d="M4 19L12 5L20 19" stroke="url(#caretGradient)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</svg>

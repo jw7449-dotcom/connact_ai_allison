@@ -1,0 +1,1 @@
+All examples are fictional. sample-resume.pdf and sample-resume.docx contain extractable text. image-only.pdf is an intentionally textless PDF that must be rejected; it simulates the no-text condition of a scan.

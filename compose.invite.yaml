@@ -1,0 +1,15 @@
+# Run with compose.yaml. Supply PUBLIC_ORIGIN (HTTPS), PUBLIC_HOST and provider keys.
+# Ports stay on loopback; terminate TLS with the host's reverse proxy.
+services:
+  backend:
+    restart: unless-stopped
+    environment:
+      AUTH_MODE: invite
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set the HTTPS customer origin}
+      ALLOWED_HOSTS: backend,localhost,127.0.0.1,${PUBLIC_HOST:?Set the customer hostname}
+  frontend:
+    restart: unless-stopped
+    environment:
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set the HTTPS customer origin}
+  db:
+    restart: unless-stopped

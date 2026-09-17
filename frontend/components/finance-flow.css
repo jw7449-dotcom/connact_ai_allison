@@ -1,0 +1,245 @@
+.finance-flow {
+  max-width: 1440px;
+  margin: 0 auto;
+  min-width: 0;
+}
+.finance-flow-guide {
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.finance-flow-intro {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: var(--surface-accent);
+}
+.finance-flow-symbol {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.finance-flow-intro > div {
+  flex: 1;
+}
+.finance-flow-intro h2,
+.finance-profile-picker h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+.finance-flow-intro p,
+.finance-profile-picker p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 13px;
+}
+.finance-flow-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 16px;
+  gap: 8px;
+}
+.finance-flow-steps button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 13px 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+.finance-flow-steps button[aria-current="step"] {
+  color: var(--accent-strong);
+  border-color: var(--accent);
+  background: var(--surface-accent);
+  font-weight: 700;
+  opacity: 1;
+}
+.finance-step-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: var(--surface-soft);
+  font-size: 12px;
+}
+[aria-current="step"] .finance-step-number {
+  background: var(--accent);
+  color: var(--surface);
+}
+.finance-flow-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  border-top: 1px solid var(--line);
+  padding: 14px 24px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.finance-flow-context > span {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.finance-flow-context strong {
+  color: var(--ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.finance-flow-context a {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-left: auto;
+  color: var(--accent);
+}
+.finance-flow-content {
+  scroll-margin-top: 20px;
+}
+.finance-flow-stage {
+  border: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+}
+.finance-profile-picker {
+  padding: 26px;
+}
+.finance-profile-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.finance-profile-actions .field {
+  flex: 1;
+  min-width: 220px;
+  margin: 0;
+}
+.finance-persona-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--surface-soft);
+  border-radius: 8px;
+}
+.finance-persona-summary > div {
+  flex: 1;
+  min-width: 0;
+}
+.finance-persona-summary strong,
+.finance-persona-summary p {
+  overflow-wrap: anywhere;
+}
+.finance-embedded-persona {
+  margin-top: 24px;
+}
+.finance-embedded-persona > .button {
+  margin-top: 16px;
+}
+.finance-step-hint {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin: 0 0 20px;
+}
+.finance-saved-contact {
+  max-width: 480px;
+  margin-bottom: 24px;
+}
+.finance-flow-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  margin-top: 28px;
+  position: sticky;
+  bottom: 12px;
+  z-index: 5;
+  box-shadow: 0 6px 24px var(--shadow);
+}
+.finance-flow-footer > span {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.finance-flow .studio-footnote {
+  margin-bottom: 0;
+}
+@media (max-width: 850px) {
+  .finance-flow-intro {
+    padding: 18px;
+  }
+  .finance-flow-steps {
+    gap: 4px;
+    padding: 10px;
+  }
+  .finance-flow-steps button {
+    flex-direction: column;
+    gap: 7px;
+    font-size: 11px;
+    padding: 10px 3px;
+  }
+  .finance-flow-footer {
+    flex-wrap: wrap;
+    padding: 14px;
+    bottom: 6px;
+  }
+  .finance-flow-footer > span {
+    order: 3;
+    width: 100%;
+    text-align: center;
+  }
+  .finance-flow-context {
+    padding: 14px 18px;
+  }
+  .finance-flow-context a {
+    margin-left: 0;
+  }
+  .finance-profile-picker {
+    padding: 18px;
+  }
+}
+@media (max-width: 480px) {
+  .finance-flow-intro {
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .finance-flow-symbol {
+    display: none;
+  }
+  .finance-flow-intro h2 {
+    font-size: 16px;
+  }
+  .finance-profile-actions .field {
+    min-width: 0;
+    flex-basis: 100%;
+  }
+  .finance-persona-summary {
+    flex-wrap: wrap;
+    padding: 14px;
+  }
+  .finance-flow-footer {
+    gap: 10px;
+  }
+  .finance-flow-footer .button {
+    font-size: 12px;
+    padding: 9px 10px;
+  }
+}

@@ -1,0 +1,49 @@
+.section {
+  margin: 22px 0;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.heading h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.section p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.form {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.form label {
+  display: grid;
+  flex: 0 1 360px;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.form input {
+  min-height: 40px;
+  width: 100%;
+}
+
+.section .error {
+  color: #c84545;
+}

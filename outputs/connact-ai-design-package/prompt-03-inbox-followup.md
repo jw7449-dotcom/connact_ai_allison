@@ -1,0 +1,21 @@
+Please develop Connact.ai Phase 3: Inbox and Manual Follow-ups.
+
+Confirmed constraints: Personal workspaces can connect to multiple Gmail mailboxes; team support is reserved for future work. English is the default interface language, with Simplified Chinese available as an option; email language is controlled independently. Finance is the core domain, while Academic remains a placeholder and provider contract. No phase includes automated email sequences. Every module must remain independently accessible; do not force users through a step-by-step wizard. Do not present Mock behavior or the HTML demo as a live integration.
+Admin backend has been listed as Soon to be scheduled, not within the scope of P1–P4 implementation; only retain the Coming Soon entry and scope description, no real management operations are open. Platform admin and personal workspace owner are different roles.
+First inspect the workspace, AGENTS.md, and existing implementation, then provide a short implementation order and proceed with development. Extend the current data model and modules instead of rebuilding the project. Verify third-party capabilities against current official documentation. When credentials are unavailable, use an explicitly labeled Mock; live failures must never silently fall back to simulated success. Deliver code, migrations, startup instructions, key verification results, and a clear list of live items that remain unverified. Any live sending must use only test recipients specified by the user.
+
+Develop Phase 3 on top of the first two phases: centralized Inbox, original session replies, manual follow-ups, and protection for existing scheduling. Do not develop automated next email.
+
+Synchronization: first read the last 30 days and paginate, persist the history cursor, default incremental polling every two minutes and manually refreshable. If the cursor fails, execute recovery synchronization; ongoing old sessions continue tracking. Associate by workspace/mailbox/provider message/thread ID and deduplicate, messages sent and received outside the platform in Gmail can also enter the session.
+
+Inbox: three columns for filtering, session list, body and reply editor/contact sidebar. Support filtering by email, domain, unread, pending reply, and intent; unknown domains do not automatically fall under Finance. Read and archive status sync with Gmail; notes, intent, and reminders only exist on the platform. Clean email HTML, remote images default not loaded; attachments show metadata and available entry points.
+
+Reply: reuse draft and send, maintain threadId, In-Reply-To, References, and subject relationships. Validate that the reply belongs to the target session at the designated recipient. Only mark as replied if the message is actually received; distinguish between manual, automated, and unknown, cannot treat automated replies as manual reply metrics.
+
+Protection: new replies pause existing unsent scheduling for the contact and prompt for check, user must explicitly confirm to continue. This is not creating a new automated follow-up. Hard bounce addresses, unsubscribe, and explicit rejections enter workspace-level suppression; apply across emails and activities. Provide valid unsubscribe entry and manual marking, ambiguous natural language only serves as auxiliary.
+
+Manual Follow-up: FollowUpTask associates with contact/session, supports time, note, completion, reschedule, cancellation. Only platform reminders are shown upon expiration; user must actively click to enter the original session to write the email, optional template/AI, then explicitly send or schedule. Prompt to check associated tasks upon receiving a reply, do not auto send.
+
+Exception: interface displays last sync time, failure reason, and permission status; pause scheduling that requires latest reply check upon sync failure. Explain the external race condition that still exists between reply arrival and sending, no guarantee of absolute zero mis-sends.
+
+Acceptance: specified test email real replies appear in Inbox; duplicate/unordered synchronization does not repeat messages; cursor recovery; archive status correct; new replies pause scheduling; follow-up expiration never sends; retain regression from Phase 1 and 2. No real credentials are truthfully marked for verification gaps.

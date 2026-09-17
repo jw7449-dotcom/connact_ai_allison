@@ -1,0 +1,553 @@
+.site {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.site a {
+  color: var(--accent-strong);
+  text-underline-offset: 4px;
+}
+
+.site a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 5px;
+  border-radius: 3px;
+}
+
+.skip {
+  position: fixed;
+  top: -60px;
+  left: 20px;
+  z-index: 100;
+  padding: 12px 18px;
+  background: var(--surface);
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+.header,
+.main,
+.footer {
+  max-width: 1184px;
+  margin: 0 auto;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 26px;
+  padding-bottom: 26px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink) !important;
+  font-family: "Manrope", var(--font);
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 27px;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.navigation a {
+  text-decoration: none;
+  color: var(--text-secondary);
+}
+
+.navigation a[aria-current="page"] {
+  color: var(--accent-strong);
+}
+
+.navigation .openLink {
+  display: inline-flex;
+  gap: 14px;
+  padding: 10px 15px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.15fr 0.9fr;
+  align-items: center;
+  gap: 75px;
+  padding: 83px 0 86px;
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  color: var(--accent-strong);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+.hero h1,
+.policy h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(36px, 4.3vw, 53px);
+  line-height: 1.13;
+  letter-spacing: -2.1px;
+  font-weight: 750;
+}
+
+.lead {
+  margin: 25px 0 0;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin: 30px 0 20px;
+}
+
+.site .primaryLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 25px;
+  padding: 13px 19px;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.primaryLink:hover {
+  background: #1d4ed8;
+}
+
+.textLink {
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.textLink:hover,
+.navigation a:hover {
+  text-decoration: underline;
+}
+
+.caption {
+  max-width: 430px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.workflow {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 18px 65px -45px var(--shadow);
+  overflow: hidden;
+}
+
+.workflowHeading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 20px 26px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.smallDot {
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.workflow ol {
+  list-style: none;
+  margin: 0;
+  padding: 10px 26px;
+}
+
+.workflow li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 0;
+}
+
+.workflow li + li {
+  border-top: 1px solid var(--line);
+}
+
+.stepNumber {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 33px;
+  height: 33px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.workflow h2 {
+  margin: 0 0 7px;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.15px;
+}
+
+.workflow p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.workflowNote {
+  padding: 16px 26px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.features {
+  padding: 45px 0 70px;
+  border-top: 1px solid var(--line);
+}
+
+.sectionIntro h2,
+.accountNote h2,
+.chineseSummary h2 {
+  margin: 0;
+  font-size: 27px;
+  line-height: 1.4;
+  letter-spacing: -0.75px;
+}
+
+.sectionIntro .eyebrow {
+  margin-bottom: 10px;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+  margin-top: 34px;
+}
+
+.cardGrid article {
+  padding-top: 23px;
+  border-top: 2px solid var(--line);
+}
+
+.cardLabel {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.cardGrid h3 {
+  margin: 13px 0 12px;
+  font-size: 18px;
+  line-height: 1.45;
+  letter-spacing: -0.4px;
+}
+
+.cardGrid p,
+.accountNote p,
+.chineseSummary p {
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.85;
+}
+
+.accountNote {
+  display: grid;
+  grid-template-columns: 1fr 1.45fr;
+  gap: 55px;
+  padding: 38px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.accountNote h2 {
+  font-size: 24px;
+}
+
+.chineseSummary {
+  padding: 62px 0 65px;
+  max-width: 830px;
+  scroll-margin-top: 28px;
+}
+
+.chineseSummary h2 {
+  font-size: 23px;
+  margin-bottom: 22px;
+  line-height: 1.65;
+  letter-spacing: 0;
+}
+
+.chineseSummary p {
+  line-height: 2;
+}
+
+.footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  padding-top: 30px;
+  padding-bottom: 34px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+}
+
+.footer strong {
+  font-size: 14px;
+}
+
+.footer p {
+  margin: 7px 0 0;
+  color: var(--muted);
+}
+
+.footerLinks {
+  display: grid;
+  gap: 8px;
+  text-align: right;
+  color: var(--muted);
+  max-width: 370px;
+  overflow-wrap: anywhere;
+}
+
+.policy {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 68px 0 72px;
+}
+
+.policyHeader {
+  margin-bottom: 34px;
+}
+
+.policy h1 {
+  font-size: 44px;
+}
+
+.policyDate {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 17px 0 0;
+}
+
+.policyCallout {
+  padding: 22px 25px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface-accent);
+  margin-bottom: 39px;
+}
+
+.policyCallout strong {
+  font-size: 14px;
+}
+
+.policyCallout p {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.policy section {
+  margin: 31px 0 0;
+  scroll-margin-top: 28px;
+}
+
+.policy section h2 {
+  margin: 0 0 15px;
+  font-size: 20px;
+  letter-spacing: -0.35px;
+  line-height: 1.5;
+}
+
+.policy section p {
+  color: var(--text-secondary);
+  margin: 13px 0;
+  font-size: 14px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+.policy section strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.policy section.policyChinese {
+  margin-top: 45px;
+  padding-top: 35px;
+  border-top: 1px solid var(--line);
+}
+
+.policyChinese p {
+  line-height: 2.1 !important;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    gap: 36px;
+    padding-top: 50px;
+    grid-template-columns: 1.1fr 1fr;
+  }
+
+  .hero h1 {
+    font-size: 39px;
+  }
+
+  .accountNote {
+    gap: 28px;
+    padding: 28px;
+  }
+}
+
+@media (max-width: 680px) {
+  .header,
+  .main,
+  .footer {
+    padding-left: 23px;
+    padding-right: 23px;
+  }
+
+  .header {
+    flex-wrap: wrap;
+    gap: 19px;
+    padding-top: 22px;
+    padding-bottom: 20px;
+  }
+
+  .navigation {
+    width: 100%;
+    gap: 23px;
+    justify-content: flex-start;
+  }
+
+  .navigation .openLink {
+    margin-left: auto;
+    padding: 8px 12px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 40px 0 45px;
+    gap: 34px;
+  }
+
+  .hero h1 {
+    max-width: 480px;
+    font-size: 41px;
+    letter-spacing: -1.6px;
+  }
+
+  .lead {
+    font-size: 15px;
+    margin-top: 20px;
+  }
+
+  .cardGrid,
+  .accountNote {
+    grid-template-columns: 1fr;
+  }
+
+  .cardGrid {
+    gap: 15px;
+    margin-top: 23px;
+  }
+
+  .features {
+    padding: 36px 0;
+  }
+
+  .accountNote {
+    gap: 20px;
+    padding: 24px;
+  }
+
+  .accountNote .eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .chineseSummary {
+    padding: 40px 0;
+  }
+
+  .footer {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .footerLinks {
+    text-align: left;
+  }
+
+  .policy {
+    padding-top: 37px;
+  }
+
+  .policy h1 {
+    font-size: 36px;
+  }
+
+  .policyCallout {
+    padding: 18px 20px;
+  }
+}
+
+@media print {
+  .header,
+  .footer,
+  .skip,
+  .actions {
+    display: none;
+  }
+
+  .site {
+    color: #111;
+    background: #fff;
+  }
+
+  .policy {
+    max-width: none;
+    padding: 0;
+  }
+}

@@ -57,13 +57,16 @@ def owned_persona(repo, persona_id):
 
 
 @router.get("/writing-templates")
-def templates(persona_id: str, repo=Depends(get_repo)):
-    owned_persona(repo, persona_id)
-    custom = sorted(
-        repo.all(WritingTemplate, WritingTemplate.persona_id == persona_id),
-        key=lambda x: x.updated_at,
-        reverse=True,
-    )
+def templates(persona_id: str | None = None, repo=Depends(get_repo)):
+    # Without a persona there is no library to read, only the built-in starters.
+    custom = []
+    if persona_id:
+        owned_persona(repo, persona_id)
+        custom = sorted(
+            repo.all(WritingTemplate, WritingTemplate.persona_id == persona_id),
+            key=lambda x: x.updated_at,
+            reverse=True,
+        )
     return [{**item, "revision": 1, "is_default": True} for item in DEFAULT_TEMPLATES] + [response(item) for item in custom]
 
 

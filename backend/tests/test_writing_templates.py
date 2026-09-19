@@ -96,7 +96,10 @@ def test_template_requires_a_persona_the_caller_owns(client):
     persona = make_persona(client)
     no_persona = {k: v for k, v in template_body(persona).items() if k != "persona_id"}
     assert client.post("/api/writing-templates", json=no_persona).status_code == 422
-    assert client.get("/api/writing-templates").status_code == 422
+    client.post("/api/writing-templates", json=template_body(persona))
+    # A read without a persona exposes no library, only the built-in starters.
+    unscoped = client.get("/api/writing-templates").json()
+    assert all(item["is_default"] for item in unscoped) and len(unscoped) == 3
 
     with Session() as db:
         db.add(Workspace(id="other-persona-ws", name="Other"))

@@ -20,16 +20,20 @@ type WritingTemplate = {
 type TemplateContent = Pick<WritingTemplate, "subject" | "body_html">;
 
 export default function WritingTemplateLibrary({
+  personaId,
   draft,
   disabled,
   flush,
   onApply,
   bodyOnly = false,
 }: {
+  personaId: string;
   draft?: Draft;
   disabled: boolean;
   flush?: () => Promise<Draft | null>;
-  onApply: (content: TemplateContent) => Promise<void>;
+  // Absent when the library is mounted to manage a persona's templates rather
+  // than to apply one to an open draft.
+  onApply?: (content: TemplateContent) => Promise<void>;
   bodyOnly?: boolean;
 }) {
   const { t, notify } = useApp();
@@ -54,7 +58,11 @@ export default function WritingTemplateLibrary({
   const reload = useCallback(async () => {
     setLoading(true);
     try {
-      const items = await api<WritingTemplate[]>("/writing-templates");
+      // No persona still returns the built-in starters, just nothing personal.
+      const items = await api<WritingTemplate[]>(
+        "/writing-templates" +
+          (personaId ? "?persona_id=" + encodeURIComponent(personaId) : ""),
+      );
       if (!mounted.current) return;
       setTemplates(items);
       setSelectedId((value) =>
@@ -66,7 +74,7 @@ export default function WritingTemplateLibrary({
     } finally {
       if (mounted.current) setLoading(false);
     }
-  }, []);
+  }, [personaId]);
   useEffect(() => {
     void reload();
   }, [reload]);
@@ -85,7 +93,7 @@ export default function WritingTemplateLibrary({
     .trim();
 
   async function useTemplate() {
-    if (!selected) return;
+    if (!selected || !onApply) return;
     setBusy(true);
     setError("");
     try {
@@ -113,6 +121,7 @@ export default function WritingTemplateLibrary({
   async function saveTemplate(update = false) {
     if (
       !flush ||
+      !personaId ||
       !name.trim() ||
       (update && (!selected || selected.is_default))
     )
@@ -123,6 +132,7 @@ export default function WritingTemplateLibrary({
       const current = await flush();
       if (!current || !mounted.current) return;
       const body = {
+        persona_id: personaId,
         name: name.trim(),
         description,
         category: update ? selected!.category : "Custom",
@@ -193,6 +203,7 @@ export default function WritingTemplateLibrary({
           ),
         );
       const result = await post<WritingTemplate>("/writing-templates", {
+        persona_id: personaId,
         name: data.name,
         subject: data.subject,
         body_html: data.body_html,
@@ -274,7 +285,7 @@ export default function WritingTemplateLibrary({
         <button
           type="button"
           className="button small-button"
-          disabled={disabled || busy}
+          disabled={disabled || busy || !personaId}
           onClick={() => uploadInput.current?.click()}
         >
           <Upload size={14} />
@@ -293,6 +304,14 @@ export default function WritingTemplateLibrary({
           }}
         />
       </div>
+      {draft && !personaId && (
+        <p className="panel-note">
+          {t(
+            "Choose a persona for this draft before saving a template.",
+            "请先为这封草稿选择画像，然后再保存模板。",
+          )}
+        </p>
+      )}
       {showSave && (
         <div className="email-template-save">
           <Field label={t("Template name", "模板名称")}>
@@ -455,33 +474,37 @@ export default function WritingTemplateLibrary({
                   className="email-template-body"
                   dangerouslySetInnerHTML={{ __html: selected.body_html }}
                 />
-                <button
-                  type="button"
-                  className="button primary small-button"
-                  disabled={disabled || busy}
-                  onClick={() => void useTemplate()}
-                >
-                  {busy ? <Busy /> : <BookOpen size={14} />}
-                  {draft
-                    ? t("Use template", "使用模板")
-                    : t("Create draft from template", "用模板创建草稿")}
-                </button>
-                <p className="email-template-use-note">
-                  {draft
-                    ? bodyOnly
-                      ? t(
-                          "Replaces the current email body. This reply keeps the inherited thread subject.",
-                          "替换当前邮件正文，此回复继续使用继承的会话主题。",
-                        )
-                      : t(
-                          "Replaces the current subject and body. Edit the result in Your email below.",
-                          "替换当前主题与正文，可在下方邮件内容中继续编辑。",
-                        )
-                    : t(
-                        "Creates a new draft with this subject and body. Personalize it in Email Studio.",
-                        "使用此主题与正文创建新草稿，可在邮件工作室中进行个性化编辑。",
-                      )}
-                </p>
+                {onApply && (
+                  <>
+                    <button
+                      type="button"
+                      className="button primary small-button"
+                      disabled={disabled || busy}
+                      onClick={() => void useTemplate()}
+                    >
+                      {busy ? <Busy /> : <BookOpen size={14} />}
+                      {draft
+                        ? t("Use template", "使用模板")
+                        : t("Create draft from template", "用模板创建草稿")}
+                    </button>
+                    <p className="email-template-use-note">
+                      {draft
+                        ? bodyOnly
+                          ? t(
+                              "Replaces the current email body. This reply keeps the inherited thread subject.",
+                              "替换当前邮件正文，此回复继续使用继承的会话主题。",
+                            )
+                          : t(
+                              "Replaces the current subject and body. Edit the result in Your email below.",
+                              "替换当前主题与正文，可在下方邮件内容中继续编辑。",
+                            )
+                        : t(
+                            "Creates a new draft with this subject and body. Personalize it in Email Studio.",
+                            "使用此主题与正文创建新草稿，可在邮件工作室中进行个性化编辑。",
+                          )}
+                    </p>
+                  </>
+                )}
               </article>
             )}
           </div>

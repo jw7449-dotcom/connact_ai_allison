@@ -9,7 +9,6 @@ import {
   Search,
   Users,
   Mail,
-  Layers,
   Inbox,
   Send,
   ChartNoAxesCombined,
@@ -34,7 +33,6 @@ import EmailStudio from "./email-studio";
 import AuthGate from "./auth-gate";
 import Admin from "./admin";
 import Sequences from "./sequences";
-import WritingTemplatesPage from "./writing-templates-page";
 import { Mailboxes, MailInbox, Outbox, Followups } from "./mail-center";
 import { post } from "@/lib/api";
 
@@ -45,7 +43,6 @@ const main = [
   ["/contacts", "Contacts", "联系人", Users],
   ["/email", "Email Studio", "邮件工作室", Mail],
   ["/sequences", "Sequences", "邮件序列", GitBranch],
-  ["/templates", "Templates", "模板", Layers],
 ] as const;
 const later = [
   ["/mailboxes", "Mailboxes", "邮箱", Mail],
@@ -299,8 +296,6 @@ function Shell() {
             <EmailStudio />
           ) : path === "/sequences" ? (
             <Sequences />
-          ) : path === "/templates" ? (
-            <WritingTemplatesPage />
           ) : path === "/mailboxes" ? (
             <Mailboxes />
           ) : path === "/inbox" ? (

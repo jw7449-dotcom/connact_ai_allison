@@ -532,6 +532,7 @@ export function DraftEditor({
           )}
           {draft.writing_mode === "template" && (
             <WritingTemplateLibrary
+              personaId={draft.persona_id || ""}
               draft={
                 replySubject === undefined
                   ? draft

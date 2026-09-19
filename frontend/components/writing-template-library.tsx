@@ -271,7 +271,7 @@ export default function WritingTemplateLibrary({
           <button
             type="button"
             className="button small-button"
-            disabled={disabled || busy || !canSave}
+            disabled={disabled || busy || !canSave || !personaId}
             onClick={() => {
               setName(draft.subject || "");
               setDescription("");

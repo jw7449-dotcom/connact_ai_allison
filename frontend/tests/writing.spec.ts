@@ -432,7 +432,15 @@ test("email templates upload, persist across drafts, and resolve in a real previ
   page,
 }) => {
   // Actual workspace API, with no AI request or paid-provider call.
+  // Templates belong to a persona, so the draft needs one before it can save.
+  const owner = await (
+    await page.request.post("/api/personas", {
+      data: { label: "Template owner", data: {} },
+    })
+  ).json();
   const originalId = await createDraft(page);
+  // Other specs share this database, so select by id rather than by position.
+  await page.getByLabel("Writing context · Persona").selectOption(owner.id);
   await page.getByRole("button", { name: "Template", exact: true }).click();
   await expect(page.locator(".email-template-list > button")).toHaveCount(3);
   await page.getByRole("button", { name: "Use template", exact: true }).click();
@@ -471,6 +479,9 @@ test("email templates upload, persist across drafts, and resolve in a real previ
   ).toBeVisible();
   const secondId = await createDraft(page);
   expect(secondId).not.toBe(originalId);
+  // The template belongs to a persona, so a second draft reaches it only by
+  // using that same persona.
+  await page.getByLabel("Writing context · Persona").selectOption(owner.id);
   await page.getByRole("button", { name: "Template", exact: true }).click();
   await page
     .getByLabel("Template collection", { exact: true })
@@ -544,17 +555,33 @@ test("email templates upload, persist across drafts, and resolve in a real previ
   await expect(page.getByLabel("Subject", { exact: true })).toHaveValue(
     "Research conversation for {{name}}",
   );
-  await page.goto("/templates");
+  // The uploaded template lives under the persona that owns it.
+  await page.goto("/personas");
+  await page.getByRole("button", { name: /Template owner/ }).click();
+  await page.getByRole("tab", { name: "Templates" }).click();
   await expect(
-    page.getByRole("heading", { name: "Email templates", exact: true }),
+    page
+      .locator(".email-template-list > button")
+      .filter({ hasText: "Imported follow-up" }),
   ).toBeVisible();
+  // Managing a persona's library offers no draft to apply a template to.
+  await expect(
+    page.getByRole("button", {
+      name: "Create draft from template",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  // Applying it still works from a draft that uses the same persona.
+  await page.goto("/email?draft=" + secondId);
+  await page.getByRole("button", { name: "Template", exact: true }).click();
+  await page
+    .getByLabel("Template collection", { exact: true })
+    .selectOption("saved");
   await page
     .locator(".email-template-list > button")
     .filter({ hasText: "Imported follow-up" })
     .click();
-  await page
-    .getByRole("button", { name: "Create draft from template", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Use template", exact: true }).click();
   await expect(page.getByLabel("Subject", { exact: true })).toHaveValue(
     "A short follow-up",
   );
@@ -618,4 +645,22 @@ test("Bailian models share a platform group and complete a saved writing task", 
   );
   await page.goto("/email?draft=" + id);
   await expect(select).toHaveValue("bailian/kimi-k3");
+});
+
+test("saving a template requires the draft to have a persona", async ({
+  page,
+}) => {
+  await createDraft(page);
+  await page.getByRole("button", { name: "Template", exact: true }).click();
+  // A fresh draft has no persona: only the three code-constant starters.
+  await expect(page.locator(".email-template-list > button")).toHaveCount(3);
+  await expect(
+    page.getByText("Choose a persona for this draft before saving a template."),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Save email as template", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Upload template", exact: true }),
+  ).toBeDisabled();
 });

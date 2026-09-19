@@ -209,10 +209,13 @@ test("resume upload, rich text, independent writing language and future routes",
   await expect(page.locator(".email-content strong")).toContainText(
     "bold text",
   );
+  // Templates are reached through the persona that owns them, not a route.
   await page.goto("/templates");
   await expect(
-    page.getByRole("region", { name: "Email template library" }),
+    page.getByText("This page does not exist.", { exact: true }),
   ).toBeVisible();
+  await page.goto("/personas");
+  await expect(page.getByRole("tab", { name: "Templates" })).toBeVisible();
   for (const route of ["campaigns", "analytics", "settings"]) {
     await page.goto("/" + route);
     await expect(page.getByText("Coming Soon", { exact: true })).toBeVisible();

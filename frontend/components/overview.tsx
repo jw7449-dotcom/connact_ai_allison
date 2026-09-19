@@ -132,7 +132,7 @@ function Composer() {
           [Search, "Find people", "搜索人员", "/people"],
           [Mail, "Write an email", "撰写邮件", "/email"],
           [ContactRound, "Refine persona", "完善画像", "/personas"],
-          [BookOpen, "Browse templates", "浏览模板", "/templates"],
+          [Users, "Saved contacts", "已保存联系人", "/contacts"],
         ].map(([Icon, en, zh, href]) => {
           const I = Icon as typeof Users;
           return (
@@ -443,10 +443,6 @@ const purposes: Record<string, [string, string]> = {
   academic: [
     "A future research networking workspace: build an academic profile, discover researchers from cited sources, and draft a tailored introduction. Researcher search is not available in this phase.",
     "未来的科研人脉工作区：建立学术画像、依据可引用来源寻找研究人员并撰写联系邮件。本阶段尚不支持导师搜索。",
-  ],
-  templates: [
-    "A future library for creating, organizing and reusing writing templates. Three Finance writing starting points are already available in Email Studio.",
-    "未来支持创建、整理和复用邮件模板。邮件工作室已提供三种金融写作起点。",
   ],
   campaigns: [
     "Organize outreach and follow-ups in a later phase, reusing your existing contacts and drafts.",

@@ -13,7 +13,17 @@ import {
 import { useApp } from "@/lib/context";
 import { api, post, put, errorText } from "@/lib/api";
 import type { Persona, PersonaData } from "@/lib/types";
-import { Heading, Field, Avatar, Badge, Busy, DateLabel, Nav } from "./ui";
+import {
+  Heading,
+  Field,
+  Avatar,
+  Badge,
+  Busy,
+  DateLabel,
+  Nav,
+  Empty,
+} from "./ui";
+import WritingTemplateLibrary from "./writing-template-library";
 const blank: PersonaData = {
   name: "",
   education: "",
@@ -98,6 +108,7 @@ export default function Personas({
     [parsed, setParsed] = useState<ResumeJob | null>(null),
     [documents, setDocuments] = useState<ResumeJob[]>([]),
     [hydrated, setHydrated] = useState(false);
+  const [tab, setTab] = useState<"background" | "templates">("background");
   const storageKey = `connact-persona-editor:${config?.workspace_id || "local-personal"}${onSaved ? ":finance:" + (initialPersonaId || "new") : ""}`;
   const viewId = useRef(0);
   useEffect(() => {
@@ -437,175 +448,216 @@ export default function Personas({
             </div>
           )}
         </aside>
-        <section className="panel persona-form">
-          <div className="section-head">
-            <h2>
-              {selected
-                ? t("Edit persona", "编辑画像")
-                : t("Create your persona", "创建职业画像")}
-            </h2>
-            <Badge tone={dirty ? "amber" : "green"}>
-              {dirty
-                ? t("Unsaved changes", "尚未保存")
-                : selected
-                  ? `Version ${selected.version}`
-                  : t("New", "新建")}
-            </Badge>
+        <div className="persona-main">
+          <div className="persona-tabs" role="tablist">
+            {(["background", "templates"] as const).map((key) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={tab === key}
+                className={tab === key ? "active" : ""}
+                onClick={() => setTab(key)}
+              >
+                {key === "background"
+                  ? t("Background", "背景")
+                  : t("Templates", "模板")}
+              </button>
+            ))}
           </div>
-          <div className="upload-zone">
-            <span className="upload-icon">
-              <Upload size={23} />
-            </span>
-            <div>
-              <strong>{t("Start with your resume", "从简历开始")}</strong>
-              <p>
-                {t(
-                  "Text-based PDF or DOCX · Up to 8 MB · No scanned documents",
-                  "文本型 PDF 或 DOCX · 不超过 8 MB · 不支持扫描件",
-                )}
-              </p>
-              <small>
-                {config?.ai_mode === "mock"
-                  ? t(
-                      "Mock extraction uses section headings. Review unmapped text below.",
-                      "模拟解析按章节标题提取，请检查原文中未映射的内容。",
-                    )
-                  : t(
-                      "Resume text is sent to your configured AI provider for extraction.",
-                      "简历文本将发送至已配置的 AI 服务进行提取。",
-                    )}
-              </small>
-            </div>
-            <label className={`button ${uploading ? "disabled" : ""}`}>
-              {uploading ? <Busy /> : <Upload size={15} />}{" "}
-              {uploading
-                ? t("Parsing…", "解析中…")
-                : t("Upload resume", "上传简历")}
-              <input
-                aria-label="Upload resume"
-                type="file"
-                accept=".pdf,.docx"
-                disabled={uploading}
-                hidden
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) void upload(f);
-                  e.target.value = "";
-                }}
+          {tab === "templates" ? (
+            selected ? (
+              <WritingTemplateLibrary
+                personaId={selected.id}
+                disabled={saving}
               />
-            </label>
-          </div>
-          {error && (
-            <div className="error-panel" role="alert">
-              {error}
-              <p>
-                {t(
-                  "You can continue with manual entry below.",
-                  "您可以继续使用下方表单手动填写。",
+            ) : (
+              <Empty
+                title={t("No persona selected", "尚未选择画像")}
+                detail={t(
+                  "Create or choose a persona before adding templates to it.",
+                  "请先创建或选择一个画像，再为它添加模板。",
                 )}
-              </p>
-            </div>
-          )}
-          {raw && (
-            <details className="raw-text">
-              <summary>
-                {t("Review extracted source text", "检查提取的简历原文")}
-              </summary>
-              <pre>{raw}</pre>
-              {documentId && (
-                <a href={"/api/documents/" + documentId + "/download"}>
-                  {t("Download original resume", "下载原始简历")}
-                </a>
-              )}
-            </details>
-          )}
-          <div className="form-intro">
-            <UserRound size={17} />
-            <span>
-              {t(
-                "Or tell your story in your own words",
-                "也可以直接手动填写职业背景",
-              )}
-            </span>
-          </div>
-          <form onSubmit={save}>
-            <fieldset
-              disabled={saving}
-              style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}
-            >
-              <div className="form-grid">
-                <Field label={t("Persona name", "画像名称")} className="full">
-                  <input
-                    required
-                    value={label}
-                    maxLength={150}
-                    placeholder={t(
-                      "e.g. Investment banking opportunities",
-                      "例如：投资银行求职",
+              />
+            )
+          ) : (
+            <section className="panel persona-form">
+              <div className="section-head">
+                <h2>
+                  {selected
+                    ? t("Edit persona", "编辑画像")
+                    : t("Create your persona", "创建职业画像")}
+                </h2>
+                <Badge tone={dirty ? "amber" : "green"}>
+                  {dirty
+                    ? t("Unsaved changes", "尚未保存")
+                    : selected
+                      ? `Version ${selected.version}`
+                      : t("New", "新建")}
+                </Badge>
+              </div>
+              <div className="upload-zone">
+                <span className="upload-icon">
+                  <Upload size={23} />
+                </span>
+                <div>
+                  <strong>{t("Start with your resume", "从简历开始")}</strong>
+                  <p>
+                    {t(
+                      "Text-based PDF or DOCX · Up to 8 MB · No scanned documents",
+                      "文本型 PDF 或 DOCX · 不超过 8 MB · 不支持扫描件",
                     )}
+                  </p>
+                  <small>
+                    {config?.ai_mode === "mock"
+                      ? t(
+                          "Mock extraction uses section headings. Review unmapped text below.",
+                          "模拟解析按章节标题提取，请检查原文中未映射的内容。",
+                        )
+                      : t(
+                          "Resume text is sent to your configured AI provider for extraction.",
+                          "简历文本将发送至已配置的 AI 服务进行提取。",
+                        )}
+                  </small>
+                </div>
+                <label className={`button ${uploading ? "disabled" : ""}`}>
+                  {uploading ? <Busy /> : <Upload size={15} />}{" "}
+                  {uploading
+                    ? t("Parsing…", "解析中…")
+                    : t("Upload resume", "上传简历")}
+                  <input
+                    aria-label="Upload resume"
+                    type="file"
+                    accept=".pdf,.docx"
+                    disabled={uploading}
+                    hidden
                     onChange={(e) => {
-                      setLabel(e.target.value);
-                      setDirty(true);
+                      const f = e.target.files?.[0];
+                      if (f) void upload(f);
+                      e.target.value = "";
                     }}
                   />
-                </Field>
-                {fields.map(([key, en, zh, placeholder]) => (
-                  <Field
-                    label={t(en, zh)}
-                    key={key}
-                    className={
-                      [
-                        "experience",
-                        "career_goals",
-                        "contact_purpose",
-                      ].includes(key)
-                        ? "full"
-                        : ""
-                    }
-                  >
-                    {["name", "sectors", "target_regions", "skills"].includes(
-                      key,
-                    ) ? (
-                      <input
-                        value={data[key]}
-                        placeholder={placeholder}
-                        onChange={(e) => {
-                          setData({ ...data, [key]: e.target.value });
-                          setDirty(true);
-                        }}
-                      />
-                    ) : (
-                      <textarea
-                        rows={key === "experience" ? 3 : 2}
-                        value={data[key]}
-                        placeholder={placeholder}
-                        onChange={(e) => {
-                          setData({ ...data, [key]: e.target.value });
-                          setDirty(true);
-                        }}
-                      />
-                    )}
-                  </Field>
-                ))}
+                </label>
               </div>
-              <div className="form-footer">
+              {error && (
+                <div className="error-panel" role="alert">
+                  {error}
+                  <p>
+                    {t(
+                      "You can continue with manual entry below.",
+                      "您可以继续使用下方表单手动填写。",
+                    )}
+                  </p>
+                </div>
+              )}
+              {raw && (
+                <details className="raw-text">
+                  <summary>
+                    {t("Review extracted source text", "检查提取的简历原文")}
+                  </summary>
+                  <pre>{raw}</pre>
+                  {documentId && (
+                    <a href={"/api/documents/" + documentId + "/download"}>
+                      {t("Download original resume", "下载原始简历")}
+                    </a>
+                  )}
+                </details>
+              )}
+              <div className="form-intro">
+                <UserRound size={17} />
                 <span>
                   {t(
-                    "Only saved details are used for recommendations.",
-                    "只有已保存的资料会用于推荐。",
+                    "Or tell your story in your own words",
+                    "也可以直接手动填写职业背景",
                   )}
                 </span>
-                <button
-                  className="button primary"
-                  disabled={saving || uploading}
-                >
-                  {saving ? <Busy /> : <Save size={16} />}{" "}
-                  {t("Save persona", "保存画像")}
-                </button>
               </div>
-            </fieldset>
-          </form>
-        </section>
+              <form onSubmit={save}>
+                <fieldset
+                  disabled={saving}
+                  style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}
+                >
+                  <div className="form-grid">
+                    <Field
+                      label={t("Persona name", "画像名称")}
+                      className="full"
+                    >
+                      <input
+                        required
+                        value={label}
+                        maxLength={150}
+                        placeholder={t(
+                          "e.g. Investment banking opportunities",
+                          "例如：投资银行求职",
+                        )}
+                        onChange={(e) => {
+                          setLabel(e.target.value);
+                          setDirty(true);
+                        }}
+                      />
+                    </Field>
+                    {fields.map(([key, en, zh, placeholder]) => (
+                      <Field
+                        label={t(en, zh)}
+                        key={key}
+                        className={
+                          [
+                            "experience",
+                            "career_goals",
+                            "contact_purpose",
+                          ].includes(key)
+                            ? "full"
+                            : ""
+                        }
+                      >
+                        {[
+                          "name",
+                          "sectors",
+                          "target_regions",
+                          "skills",
+                        ].includes(key) ? (
+                          <input
+                            value={data[key]}
+                            placeholder={placeholder}
+                            onChange={(e) => {
+                              setData({ ...data, [key]: e.target.value });
+                              setDirty(true);
+                            }}
+                          />
+                        ) : (
+                          <textarea
+                            rows={key === "experience" ? 3 : 2}
+                            value={data[key]}
+                            placeholder={placeholder}
+                            onChange={(e) => {
+                              setData({ ...data, [key]: e.target.value });
+                              setDirty(true);
+                            }}
+                          />
+                        )}
+                      </Field>
+                    ))}
+                  </div>
+                  <div className="form-footer">
+                    <span>
+                      {t(
+                        "Only saved details are used for recommendations.",
+                        "只有已保存的资料会用于推荐。",
+                      )}
+                    </span>
+                    <button
+                      className="button primary"
+                      disabled={saving || uploading}
+                    >
+                      {saving ? <Busy /> : <Save size={16} />}{" "}
+                      {t("Save persona", "保存画像")}
+                    </button>
+                  </div>
+                </fieldset>
+              </form>
+            </section>
+          )}
+        </div>
       </div>
     </>
   );

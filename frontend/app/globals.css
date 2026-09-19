@@ -1034,6 +1034,30 @@ p {
 .dashboard-grid.bottom {
   grid-template-columns: 1.25fr 1fr;
 }
+.persona-main {
+  min-width: 0;
+}
+.persona-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+.persona-tabs button {
+  border: 0;
+  background: none;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.persona-tabs button.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
 .persona-feature {
   padding: 24px;
 }

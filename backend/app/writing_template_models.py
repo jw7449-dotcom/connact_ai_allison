@@ -1,6 +1,6 @@
 """Reusable email content, separate from sequence step templates."""
 
-from sqlalchemy import Integer, String, Text
+from sqlalchemy import ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from .db import Base
 from .models import Scoped
@@ -9,6 +9,9 @@ from .models import Scoped
 class WritingTemplate(Scoped, Base):
     __tablename__ = "writing_templates"
 
+    persona_id: Mapped[str] = mapped_column(
+        ForeignKey("personas.id", ondelete="CASCADE"), index=True
+    )
     name: Mapped[str] = mapped_column(String(200))
     description: Mapped[str] = mapped_column(Text, default="")
     category: Mapped[str] = mapped_column(String(60), default="Custom")

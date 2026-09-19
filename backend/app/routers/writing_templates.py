@@ -1,9 +1,9 @@
-"""Workspace-owned reusable emails. Using one never sends an email."""
+"""Persona-owned reusable emails. Using one never sends an email."""
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import update as sql_update
 from ..db import get_repo
-from ..models import now
+from ..models import Persona, now
 from ..writing_template_models import WritingTemplate
 from ..writing_template_schemas import WritingTemplateInput
 from ..services.contacts import row
@@ -51,19 +51,31 @@ def values(body):
     return result
 
 
+def owned_persona(repo, persona_id):
+    """404s when the persona is missing or belongs to another workspace."""
+    return repo.get(Persona, persona_id)
+
+
 @router.get("/writing-templates")
-def templates(repo=Depends(get_repo)):
-    custom = sorted(repo.all(WritingTemplate), key=lambda x: x.updated_at, reverse=True)
+def templates(persona_id: str, repo=Depends(get_repo)):
+    owned_persona(repo, persona_id)
+    custom = sorted(
+        repo.all(WritingTemplate, WritingTemplate.persona_id == persona_id),
+        key=lambda x: x.updated_at,
+        reverse=True,
+    )
     return [{**item, "revision": 1, "is_default": True} for item in DEFAULT_TEMPLATES] + [response(item) for item in custom]
 
 
 @router.post("/writing-templates", status_code=201)
 def create(body: WritingTemplateInput, repo=Depends(get_repo)):
+    owned_persona(repo, body.persona_id)
     return response(repo.add(WritingTemplate, **values(body)))
 
 
 @router.put("/writing-templates/{id}")
 def update(id: str, body: WritingTemplateInput, repo=Depends(get_repo)):
+    owned_persona(repo, body.persona_id)
     template = repo.get(WritingTemplate, id)
     if body.revision is None or body.revision != template.revision:
         raise HTTPException(409, "This template changed. Reload the library before updating it.")

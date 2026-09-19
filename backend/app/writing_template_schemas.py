@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class WritingTemplateInput(BaseModel):
+    persona_id: str = Field(min_length=1, max_length=64)
     name: str = Field(min_length=1, max_length=200)
     description: str = Field("", max_length=2000)
     category: str = Field("Custom", min_length=1, max_length=60)

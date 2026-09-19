@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "connact",
+      "runtimeExecutable": "./scripts/dev.sh",
+      "runtimeArgs": [],
+      "port": 3100
+    },
+    {
+      "name": "demo-html",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4500",
+        "--directory",
+        "outputs/connact-ai-design-package"
+      ],
+      "port": 4500
+    }
+  ]
+}

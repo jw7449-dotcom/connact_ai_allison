@@ -1,13 +1,27 @@
 from fastapi import APIRouter, Depends
 from ..db import get_repo
-from ..schemas import SearchInput, AssessmentInput
+from ..schemas import SearchInput, AssessmentInput, SearchIntentInput, SECTORS
 from ..models import Contact, Persona, PeopleJob
 from ..config import settings
 from ..providers import people_search, ai
 from ..services.contacts import upsert_search, contact_json, assess
 from ..services.people_jobs import enqueue, serialize
+from ..services.search_intent import normalize_intent
 
 router = APIRouter(prefix="/finance")
+
+
+@router.post("/search/intent")
+def search_intent(body: SearchIntentInput):
+    raw = ai().complete(
+        "search_intent",
+        {
+            "prompt": body.prompt,
+            "language": body.language,
+            "allowed_sectors": list(SECTORS),
+        },
+    )
+    return {**normalize_intent(raw, body.prompt), "mode": settings.ai_mode}
 
 
 @router.post("/search")

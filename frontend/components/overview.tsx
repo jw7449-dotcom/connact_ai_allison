@@ -1,7 +1,9 @@
 "use client";
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
+  ArrowUp,
   Search,
   Users,
   FileText,
@@ -16,18 +18,147 @@ import {
   BookOpen,
 } from "lucide-react";
 import { useApp } from "@/lib/context";
+import { api, post, errorText } from "@/lib/api";
 import { Heading, Nav, Avatar, Badge, DateLabel, Empty } from "./ui";
+// Registration only collects an email, so fall back through the most
+// human-meaningful name we actually hold before giving up on one.
+function useGreetingName() {
+  const { personas } = useApp();
+  const [email, setEmail] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    api<{ email: string | null }>("/auth/session")
+      .then((s) => live && setEmail(s.email))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
+  const persona = personas[0]?.data.name?.trim();
+  if (persona) return persona.split(/\s+/)[0];
+  if (email) return email.split("@")[0];
+  return "";
+}
+type SearchIntent = {
+  title: string;
+  company: string;
+  location: string;
+  keywords: string;
+  sector: string;
+  per_page: number;
+};
+function Composer() {
+  const { t, locale, go, notify } = useApp();
+  const name = useGreetingName();
+  const [prompt, setPrompt] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
+    const q = prompt.trim();
+    if (!q || busy) return;
+    setBusy(true);
+    try {
+      const intent = await post<SearchIntent>("/finance/search/intent", {
+        prompt: q,
+        language: locale === "zh" ? "zh" : "en",
+      });
+      const params = new URLSearchParams();
+      for (const key of [
+        "title",
+        "company",
+        "location",
+        "keywords",
+        "sector",
+      ] as const)
+        if (intent[key]) params.set(key, intent[key]);
+      params.set("per_page", String(intent.per_page));
+      params.set("run", "1");
+      await go("/people?" + params);
+    } catch (e) {
+      notify(errorText(e));
+      setBusy(false);
+    }
+  };
+  return (
+    <section className="hero">
+      <h1 className="hero-greeting">
+        <Sparkles size={27} aria-hidden="true" />
+        {name ? t("Hi " + name, "你好，" + name) : t("Hi there", "你好")}
+      </h1>
+      <p className="hero-sub">
+        {t(
+          "Describe the people you want to reach and start from there.",
+          "描述你想联系的人，从这里开始。",
+        )}
+      </p>
+      <div className="hero-composer">
+        <textarea
+          rows={4}
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              void submit();
+            }
+          }}
+          placeholder={t(
+            "e.g. Investment banking associates in New York who moved over from consulting",
+            "例如：从咨询转行、目前在纽约做投行的分析师",
+          )}
+          aria-label={t("Describe who you want to reach", "描述你想联系的人")}
+        />
+        <div className="hero-composer-bar">
+          <span className="hero-hint">
+            {busy
+              ? t("Reading your request…", "正在理解你的需求…")
+              : t(
+                  "Enter to search · Shift + Enter for a new line",
+                  "回车搜索 · Shift + 回车换行",
+                )}
+          </span>
+          <button
+            type="button"
+            className="hero-send"
+            onClick={() => void submit()}
+            disabled={!prompt.trim() || busy}
+            aria-label={t("Search people", "搜索人员")}
+          >
+            <ArrowUp size={18} />
+          </button>
+        </div>
+      </div>
+      <div className="hero-chips">
+        {[
+          [Search, "Find people", "搜索人员", "/people"],
+          [Mail, "Write an email", "撰写邮件", "/email"],
+          [ContactRound, "Refine persona", "完善画像", "/personas"],
+          [BookOpen, "Browse templates", "浏览模板", "/templates"],
+        ].map(([Icon, en, zh, href]) => {
+          const I = Icon as typeof Users;
+          return (
+            <Nav key={String(en)} href={String(href)} className="hero-chip">
+              <I size={15} />
+              {t(String(en), String(zh))}
+            </Nav>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
 export function Dashboard() {
   const { t, personas, contacts, drafts } = useApp();
   return (
     <>
-      <Heading title={t("Dashboard", "总览")}>
+      <Composer />
+      <div className="section-divider">
+        <h2>{t("Overview", "总览")}</h2>
         <Nav href="/people" className="button primary">
           <Search size={16} />
           {t("Find people", "搜索人员")}
           <ArrowUpRight size={16} />
         </Nav>
-      </Heading>
+      </div>
       <div className="stats-grid">
         {[
           [

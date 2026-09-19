@@ -48,12 +48,12 @@ type PeopleFilters = {
   sector: string;
 };
 const peoplePageSize = 10;
-function searchHasMore(result: PeopleJob["result"]) {
+function searchHasMore(result: PeopleJob["result"], size = peoplePageSize) {
   return (
     result.has_more ??
     (result.total_is_estimate
-      ? (result.items?.length || 0) === peoplePageSize
-      : (result.page || 1) * peoplePageSize < (result.total || 0))
+      ? (result.items?.length || 0) === size
+      : (result.page || 1) * size < (result.total || 0))
   );
 }
 export function PeopleSearch({
@@ -72,12 +72,22 @@ export function PeopleSearch({
   onJobChange?: (id: string) => void;
 } = {}) {
   const { t, locale, personas, refresh, notify, config } = useApp();
+  // Filters can arrive from the dashboard composer, already parsed into fields.
+  const entry = useSearchParams();
+  const entryFilters = {
+    title: entry.get("title") || "",
+    company: entry.get("company") || "",
+    location: entry.get("location") || "",
+    keywords: entry.get("keywords") || "",
+    sector: (entry.get("sector") || "") as PeopleFilters["sector"],
+  };
+  const pageSize = Math.min(
+    Math.max(Number(entry.get("per_page")) || peoplePageSize, 1),
+    peoplePageSize,
+  );
+  const autoRun = entry.get("run") === "1";
   const [filters, setFilters] = useState<PeopleFilters>({
-      title: "",
-      company: "",
-      location: "",
-      keywords: "",
-      sector: "",
+      ...entryFilters,
       ...initialFilters,
     }),
     [localPersonaId, setPersonaId] = useState(personas[0]?.id || ""),
@@ -120,7 +130,9 @@ export function PeopleSearch({
           ...jobs,
           ...old.filter((job) => !jobs.some((saved) => saved.id === job.id)),
         ]);
-        if (!initialJobId && !onSelectContact && jobs[0]) setJobId(jobs[0].id);
+        // Restoring the last job would overwrite filters the composer just sent.
+        if (!autoRun && !initialJobId && !onSelectContact && jobs[0])
+          setJobId(jobs[0].id);
       })
       .catch((e) => {
         if (alive) setError(errorText(e));
@@ -161,7 +173,7 @@ export function PeopleSearch({
           setApplied(submitted);
           setResults(job.result.items || []);
           setTotal(job.result.total || 0);
-          setHasMore(searchHasMore(job.result));
+          setHasMore(searchHasMore(job.result, pageSize));
           setTotalIsEstimate(!!job.result.total_is_estimate);
           setPage(job.result.page || 1);
           setSearched(true);
@@ -218,7 +230,7 @@ export function PeopleSearch({
     try {
       const r = await post<{ job: PeopleJob; cached: boolean }>(
         "/finance/search/jobs",
-        { ...useFilters, page: n, per_page: peoplePageSize },
+        { ...useFilters, page: n, per_page: pageSize },
       );
       if (request !== searchRequest.current) return;
       setJobId(r.job.id);
@@ -227,7 +239,7 @@ export function PeopleSearch({
       if (r.job.status === "succeeded") {
         setResults(r.job.result.items || []);
         setTotal(r.job.result.total || 0);
-        setHasMore(searchHasMore(r.job.result));
+        setHasMore(searchHasMore(r.job.result, pageSize));
         setTotalIsEstimate(!!r.job.result.total_is_estimate);
         setPage(r.job.result.page || n);
         setSearched(true);
@@ -240,6 +252,13 @@ export function PeopleSearch({
       setBusy(false);
     }
   }
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if (!autoRun || restoring || autoRan.current) return;
+    autoRan.current = true;
+    void search(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRun, restoring]);
   const update = (contact: Contact) => {
     setResults((old) => old.map((c) => (c.id === contact.id ? contact : c)));
     setDetail(contact);
@@ -262,8 +281,8 @@ export function PeopleSearch({
               )
             : results.length
               ? t(
-                  `${(page - 1) * peoplePageSize + 1}–${(page - 1) * peoplePageSize + results.length} of ${total} people`,
-                  `第 ${(page - 1) * peoplePageSize + 1}–${(page - 1) * peoplePageSize + results.length} 位，共 ${total} 位`,
+                  `${(page - 1) * pageSize + 1}–${(page - 1) * pageSize + results.length} of ${total} people`,
+                  `第 ${(page - 1) * pageSize + 1}–${(page - 1) * pageSize + results.length} 位，共 ${total} 位`,
                 )
               : t("No profiles on this page", "本页没有人员")}
           {!hasMore && !busy && ` · ${t("End of results", "已到最后一页")}`}
@@ -283,8 +302,8 @@ export function PeopleSearch({
             {totalIsEstimate
               ? t(`Page ${page}`, `第 ${page} 页`)
               : t(
-                  `Page ${page} of ${Math.max(1, Math.ceil(total / peoplePageSize))}`,
-                  `第 ${page} / ${Math.max(1, Math.ceil(total / peoplePageSize))} 页`,
+                  `Page ${page} of ${Math.max(1, Math.ceil(total / pageSize))}`,
+                  `第 ${page} / ${Math.max(1, Math.ceil(total / pageSize))} 页`,
                 )}
           </span>
           <button

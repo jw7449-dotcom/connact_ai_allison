@@ -9,6 +9,9 @@ const pg = new EmbeddedPostgres({
   password: "meridian",
   port: 54329,
   persistent: true,
+  // Without this initdb defaults to SQL_ASCII, which makes psycopg return
+  // bytes for every text column and breaks SQLAlchemy's version probe.
+  initdbFlags: ["--encoding=UTF8", "--locale=C"],
   postgresFlags: ["-c", "listen_addresses=127.0.0.1"],
   onLog: () => {},
   onError: (m) => {

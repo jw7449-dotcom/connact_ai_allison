@@ -239,7 +239,7 @@ test("dashboard layout renders without horizontal page overflow", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
   await page.screenshot({ path: "../docs/dashboard.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect

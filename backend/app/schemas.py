@@ -54,6 +54,15 @@ class ContactJobInput(BaseModel):
     force: bool = False
 
 
+SECTORS = (
+    "Investment Banking",
+    "Private Equity",
+    "Asset Management",
+    "Venture Capital",
+    "Risk Management",
+)
+
+
 class SearchInput(BaseModel):
     title: str = Field("", max_length=200)
     company: str = Field("", max_length=200)
@@ -69,6 +78,11 @@ class SearchInput(BaseModel):
     ] = ""
     page: int = Field(1, ge=1, le=500)
     per_page: int = Field(10, ge=1, le=10)
+
+
+class SearchIntentInput(BaseModel):
+    prompt: str = Field(min_length=1, max_length=600)
+    language: Literal["en", "zh"] = "en"
 
 
 class AssessmentInput(BaseModel):
